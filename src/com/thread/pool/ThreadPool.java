@@ -13,8 +13,6 @@ import java.util.List;
 public class ThreadPool {
 
     // private static boolean debug = taskLogger.isInfoEnabled();
-    /* 单例 */
-    private static ThreadPool instance = ThreadPool.getInstance();
 
     private static final int SYSTEM_BUSY_TASK_COUNT = 150;
 
@@ -25,6 +23,10 @@ public class ThreadPool {
     private static int TASKCOUNTER = 0;
 
     public static boolean systemIsBusy = false;
+
+    /* 单例 */
+    private static ThreadPool instance = ThreadPool.getInstance();
+
     /* 任务队列 */
     private static List<Task> taskQueue = Collections
             .synchronizedList(new LinkedList<Task>());
