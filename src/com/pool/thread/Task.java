@@ -1,6 +1,7 @@
-package com.thread.pool;
+package com.pool.thread;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by lw on 14-4-22.
@@ -8,6 +9,7 @@ import java.util.Date;
 public abstract class Task implements Runnable {
     // private static Logger logger = Logger.getLogger(Task.class);
 
+    public List<String> taksModel;
     /* 产生时间 */
     private Date generateTime = null;
     /* 提交执行时间 */

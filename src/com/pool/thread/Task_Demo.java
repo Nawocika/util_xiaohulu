@@ -1,4 +1,7 @@
-package com.thread.pool;
+package com.pool.thread;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lw on 14-4-22.
@@ -15,10 +18,15 @@ public class Task_Demo extends Task {
     public Task[] taskCore() throws Exception {
         Task_Demo task;
         System.out.println("工作队列..初始化......");
-        Task[] tasks = new Task[10];
+        Task[] tasks = new Task[100];
+
+
         for (int i = tasks.length - 1; i >= 0; i--) {
 
             task = new Task_Demo();
+            List<String> list = new ArrayList<String>();
+            list.add(i + "");
+            task.taksModel = list;
             task.str = "00000_" + i;
             tasks[i] = task;
         }
@@ -66,10 +74,12 @@ public class Task_Demo extends Task {
      */
     @Override
     public void run() {
-        System.out.println(str);
-        System.out.println();
+
         try {
-            Thread.sleep(100);
+            System.out.println(str);
+            System.out.println();
+            System.out.println("任务模拟数据：" + this.taksModel.toString());
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

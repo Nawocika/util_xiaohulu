@@ -1,4 +1,4 @@
-package com.thread.pool;
+package com.pool.thread;
 
 import java.util.Collections;
 import java.util.Date;

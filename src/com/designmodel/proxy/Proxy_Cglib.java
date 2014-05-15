@@ -3,12 +3,16 @@ package com.designmodel.proxy;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+
 import java.lang.reflect.Method;
 
 /**
  * Created by lw on 14-5-1.
+ * <p/>
+ * cglib动态代理
+ * 项目中计时方法执行计时使用
  */
-public class BookFacadeProxy_Cglib implements MethodInterceptor {
+public class Proxy_Cglib implements MethodInterceptor {
 
     private Object object;
 
