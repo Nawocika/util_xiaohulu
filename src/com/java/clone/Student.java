@@ -75,7 +75,7 @@ public class Student implements Cloneable {
      * @throws CloneNotSupportedException
      */
     @Override
-    protected Object clone(){
+    protected Object clone() {
         Student student = null;
         try {
             student = (Student) super.clone();

@@ -30,9 +30,9 @@ public abstract class Task implements Runnable {
      */
     public void run() {
 
-          // 增加新产生的任务
+        // 增加新产生的任务
         try {
-            System.out.println("run......"+this.hashCode());
+            System.out.println("run......" + this.hashCode());
         } catch (Exception e) {
             e.printStackTrace();
         }

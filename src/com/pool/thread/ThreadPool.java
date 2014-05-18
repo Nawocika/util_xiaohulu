@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Created by lw on 14-4-22.
- *
+ * <p/>
  * 线程池
  */
 public class ThreadPool {
@@ -168,7 +168,7 @@ public class ThreadPool {
                     /* 取出任务执行 */
                     r = (Task) taskQueue.remove(0);
                 }
-                System.out.println(this.getName()+"/工作线程..run....");
+                System.out.println(this.getName() + "/工作线程..run....");
                 if (r != null) {
                     isWaiting = false;
                     try {
