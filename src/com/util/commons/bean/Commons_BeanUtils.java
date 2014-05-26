@@ -1,4 +1,4 @@
-package com.util.commons;
+package com.util.commons.bean;
 
 import com.util.commons.bean.People;
 import org.apache.commons.beanutils.BeanUtils;
