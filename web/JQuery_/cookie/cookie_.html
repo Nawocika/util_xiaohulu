@@ -1,19 +1,17 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: lw
-  Date: 14-5-1
-  Time: 17:16
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
 <html>
-<head>
-    <title>jquery.cookie.js_demo</title>
+<head lang="en">
 
+    <meta charset="UTF-8">
+    <title>jquery.cookie.js_demo</title>
     <script type="text/javascript" src="public_file/js/jquery-1.8.0.min.js"></script>
     <script type="text/javascript" src="public_file/js/jquery.cookie.js"></script>
 </head>
 <script>
+
+    //cookie 保存设置
+    var option_cookie = {expires: 7, path: '/', domain: 'jquery.com', secure: true};
+
     $(function ($) {
 
         var userName = COOKIE_UTIL.getCookie("userName");
@@ -40,18 +38,20 @@
                 COOKIE_UTIL.delCookie("userPswd");
             } else {
 
-                COOKIE_UTIL.savaCookie("userName", userName, {expires: 7, path: '/', domain: 'jquery.com', secure: true});
-                COOKIE_UTIL.savaCookie("userPswd", userPswd, {expires: 7, path: '/', domain: 'jquery.com', secure: true});
+                COOKIE_UTIL.savaCookie("userName", userName, option_cookie);
+                COOKIE_UTIL.savaCookie("userPswd", userPswd, option_cookie);
             }
             login();
         });
 
-        //登录事件
-        function login() {
-            //code......
-            //alert("login...");
-        }
+
     });
+
+    //登录事件
+    function login() {
+        //code......
+        //alert("login...");
+    }
 
     //对cookie 进行保存-获取-删除
     var COOKIE_UTIL = new function () {
