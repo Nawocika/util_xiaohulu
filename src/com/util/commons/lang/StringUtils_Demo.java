@@ -71,7 +71,8 @@ public class StringUtils_Demo {
     }
 
     public static void main(String[] args) {
-        System.out.println(StringUtils.containsAny("aba", new char[]{'a','z'}));
+
+        System.out.println(StringUtils.strip("  abcyx  ", "xyz"));
     }
 
 }
