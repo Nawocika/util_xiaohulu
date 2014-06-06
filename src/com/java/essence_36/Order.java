@@ -80,7 +80,7 @@ public class Order {
 
 
     private static void demo_7(int x, int y, int z) {
-        System.out.println("demo_7()->x=" + x);
+        System.out.println("demo_7()->B=" + x);
         System.out.println("demo_7()->y=" + y);
         System.out.println("demo_7()->z=" + z);
     }
