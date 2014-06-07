@@ -83,11 +83,12 @@
     WoMan.prototype = new Man();//女人引用男人模型
     WoMan.prototype.constructor = WoMan;//这是什么？
 
-    WoMan.prototype.action = "run by woman...";//女人自己有个特殊属性，女士跑...
 
     var woMan_ = new WoMan();
 
-    document.write("<br>" + woMan_.action);//打印run by woman...
+    document.write("<br>" + woMan_.type);//打印people
+
+    document.write("<br>" + woMan_.action);//打印run by people...
 
 
     /**
