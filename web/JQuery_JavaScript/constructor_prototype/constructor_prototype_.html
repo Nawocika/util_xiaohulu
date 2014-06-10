@@ -74,19 +74,21 @@
     function Man() {
         this.sex = "男";
     }
-    Man.prototype.action = "run by people...";//男人有一个动作是run...
+    Man.prototype.action = "run by Man_people...";//男人有一个动作是run...
 
     function WoMan() {
         this.sex = "女";
     }
 
+    WoMan.prototype.action = "run by WoMan_people...";//女人有一个动作是run...
+
     WoMan.prototype = new Man();//女人引用男人模型
-    WoMan.prototype.constructor = WoMan;//这是什么？
+    //WoMan.prototype.constructor = WoMan;//这是什么？
 
 
     var woMan_ = new WoMan();
 
-    document.write("<br>" + woMan_.type);//打印people
+    document.write("<br>" + woMan_.sex);//打印people
 
     document.write("<br>" + woMan_.action);//打印run by people...
 
@@ -230,6 +232,18 @@
     console.log(foo.__proto__); //Foo {}
     console.log(foo.prototype); //undefined
     console.log(foo.constructor); //Foo()
+
+
+    function a() {
+    }
+    var arr = new Array();
+    a.prototype = arr;
+    var as = new a();
+
+    arr.push(1);
+    as.push(2);
+    as.push(3);
+    console.log(as);
 
 
 </script>

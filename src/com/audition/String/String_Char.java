@@ -36,5 +36,29 @@ public class String_Char {
         String_Char aChar = new String_Char();
         String str = aChar.subString2GBK(string, 7);
         System.out.println(str);
+        new A().getX();
+    }
+}
+
+class A {
+    int x = 1;
+
+    class B {
+        int x = 2;
+
+        public void func() {
+            int x = 3;
+            A a = new A();
+            System.out.println(a.x);
+            System.out.println(this.x);
+            System.out.println(x);
+        }
+    }
+
+    void getX() {
+        int a=0;
+        boolean b;
+        int c=0;
+        b=a!=7;
     }
 }

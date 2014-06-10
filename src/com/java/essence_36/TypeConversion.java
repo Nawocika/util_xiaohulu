@@ -40,9 +40,9 @@ class Conversion {
 
     private static void demo_1() {
         //隐式转换
-        byte b = -23;
+       /* byte b = -23;
         short s = 60;
-        char c = '二';
+       // char c = '二';
         char c1 = 89;
 
         //需要显式转换
@@ -52,7 +52,7 @@ class Conversion {
         b = (byte) -b;
         s = (short) (b + c);
         b = (byte) (b + 1);
-        b += 1;
+        b += 1;*/
     }
 }
 
