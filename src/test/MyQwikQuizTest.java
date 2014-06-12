@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lw on 14-5-22.
@@ -22,6 +23,5 @@ public class MyQwikQuizTest {
 
     @Test
     public void testClearTheConsoleStr() throws Exception {
-
     }
 }
