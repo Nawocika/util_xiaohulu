@@ -1,4 +1,4 @@
-package com.pool.thread;
+package com.pool.my_thread;
 
 import java.util.Date;
 import java.util.List;
