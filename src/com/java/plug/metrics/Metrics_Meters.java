@@ -1,9 +1,7 @@
-package com.java.metrics;
+package com.java.plug.metrics;
 
 import com.codahale.metrics.*;
 
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,17 +15,17 @@ public class Metrics_Meters {
     /**
      * 实例化一个registry，最核心的一个模块，相当于一个应用程序的metrics系统的容器，维护一个Map
      */
-    private static final MetricRegistry metrics = new MetricRegistry();
+    private static final MetricRegistry registry = new MetricRegistry();
 
     /**
      * 在控制台上打印输出
      */
-    private static ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics).build();
+    private static ConsoleReporter reporter = ConsoleReporter.forRegistry(registry).build();
 
     /**
      * 实例化一个Meter
      */
-    private static final Meter requests = metrics.meter(MetricRegistry.name(Metrics_Meters.class, "request"));
+    private static final Meter requests = registry.meter(MetricRegistry.name(Metrics_Meters.class, "request"));
 
     public static void handleRequest() {
         requests.mark();

@@ -1,10 +1,10 @@
-package com.java.metrics;
+package com.java.plug.metrics;
 
 import com.codahale.metrics.*;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,19 +17,20 @@ public class Metrics_Counter {
     /**
      * 实例化一个registry，最核心的一个模块，相当于一个应用程序的metrics系统的容器，维护一个Map
      */
-    private static final MetricRegistry metrics = new MetricRegistry();
+    private static final MetricRegistry registry = new MetricRegistry();
 
     /**
      * 在控制台上打印输出
      */
-    private static ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics).build();
+    private static ConsoleReporter reporter = ConsoleReporter.forRegistry(registry).build();
 
     /**
      * 实例化一个counter,同样可以通过如下方式进行实例化再注册进去
      * pendingJobs = new Counter();
-     * metrics.register(MetricRegistry.name(Metrics_Counter.class, "pending-jobs"), pendingJobs);
+     * registry.register(MetricRegistry.name(Metrics_Counter.class, "pending-jobs"), pendingJobs);
      */
-    private static Counter pendingJobs = metrics.counter(MetricRegistry.name(Metrics_Counter.class, "pedding-jobs"));
+
+    private static Counter pendingJobs = registry.counter(MetricRegistry.name("count-", "pedding-jobs"));
 
     private static Queue<String> queue = new LinkedList<String>();
 
@@ -38,16 +39,21 @@ public class Metrics_Counter {
         queue.offer(str);
     }
 
-    public String take() {
+    public static String take() {
         pendingJobs.dec();
         return queue.poll();
     }
 
     public static void main(String[] args) throws InterruptedException {
+        Set<String> stringSet = registry.getNames();
+
+
         reporter.start(3, TimeUnit.SECONDS);
         while (true) {
             add("1");
             Thread.sleep(1000);
+            //take();
+            stringSet.forEach(System.out::println);
         }
     }
 }

@@ -1,8 +1,7 @@
-package com.java.metrics;
+package com.java.plug.metrics;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
 import java.util.Random;
@@ -18,17 +17,17 @@ public class Metrics_Histograms {
     /**
      * 实例化一个registry，最核心的一个模块，相当于一个应用程序的metrics系统的容器，维护一个Map
      */
-    private static final MetricRegistry metrics = new MetricRegistry();
+    private static final MetricRegistry registry = new MetricRegistry();
 
     /**
      * 在控制台上打印输出
      */
-    private static ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics).build();
+    private static ConsoleReporter reporter = ConsoleReporter.forRegistry(registry).build();
 
     /**
      * 实例化一个Histograms
      */
-    private static final Histogram randomNums = metrics.histogram(MetricRegistry.name(Metrics_Histograms.class, "random"));
+    private static final Histogram randomNums = registry.histogram(MetricRegistry.name(Metrics_Histograms.class, "random"));
 
     public static void handleRequest(double random) {
         randomNums.update((int) (random * 100));

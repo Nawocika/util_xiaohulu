@@ -1,4 +1,4 @@
-package com.java.metrics;
+package com.java.plug.metrics;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Gauge;
@@ -29,7 +29,7 @@ public class Metrics_Gauges {
     /**
      * 在控制台上打印输出
      */
-    private static ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics).build();
+    private static ConsoleReporter registry = ConsoleReporter.forRegistry(metrics).build();
 
     /**
      * Gauges是一个最简单的计量，一般用来统计瞬时状态的数据信息，比如系统中处于pending状态的job
@@ -38,8 +38,8 @@ public class Metrics_Gauges {
      * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
-        //3秒打印一次
-        reporter.start(3, TimeUnit.SECONDS);
+        //1秒打印一次
+        registry.start(1, TimeUnit.SECONDS);
 
         //实例化一个Gauge
         Gauge<Integer> gauge = new Gauge<Integer>() {
@@ -57,14 +57,14 @@ public class Metrics_Gauges {
         jmxReporter.start();
 
         //模拟数据
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20000; i++) {
             queue.add("a");
             Thread.sleep(1000);
         }
     }
 
     /**
-     * 通过以上步骤将会向MetricsRegistry容器中注册一个名字为com.java.metrics.Metrics_Ex.pending-job.size的metrics，实时获取队列长度的指标。
+     * 通过以上步骤将会向MetricsRegistry容器中注册一个名字为com.java.metrics.Metrics_Gauges.pending-job.size的metrics，实时获取队列长度的指标。
      * 另外，Core包种还扩展了几种特定的Gauge：
 
      JMX Gauges—提供给第三方库只通过JMX将指标暴露出来。

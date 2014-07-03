@@ -1,7 +1,6 @@
-package com.java.metrics;
+package com.java.plug.metrics;
 
 import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
