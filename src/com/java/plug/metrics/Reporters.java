@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by lw on 14-7-2.
+ * 输出类别工具
  */
 public class Reporters {
 
@@ -51,7 +52,6 @@ public class Reporters {
     }
 
     /**
-     * SLF4J
      *
      * @param registry
      * @param logger_Name 日志名称
