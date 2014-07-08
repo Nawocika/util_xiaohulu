@@ -1,15 +1,12 @@
 package com.elasticsearch;
 
-import com.util.date.Joda_Time;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -24,7 +21,7 @@ import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.io.IOException;
-import java.util.Date;
+import java.util.List;
 
 /**
  * Created by lw on 14-7-7.
@@ -32,7 +29,11 @@ import java.util.Date;
  * http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/index.html
  */
 public class Es_Demo {
+
     private Client client;
+
+    private static final String INDEX_DEMO_01 = "index_demo_01";
+    private static final String INDEX_DEMO_01_MAPPING = "index_demo_01_mapping";
 
     public Client getClient() {
         return client;
@@ -48,6 +49,10 @@ public class Es_Demo {
      * @return
      */
     public Client buildClient() {
+        /**
+         * 可以设置client.transport.sniff为true来使客户端去嗅探整个集群的状态，把集群中其它机器的ip地址加到客户端中，
+         * 这样做的好 处是一般你不用手动设置集群里所有集群的ip到连接客户端，它会自动帮你添加，并且自动发现新加入集群的机器。
+         */
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put("client.transport.sniff", true).put("cluster.name", "liw_test").build();
         Client client = new TransportClient(settings)
@@ -55,7 +60,6 @@ public class Es_Demo {
         // .addTransportAddress(new InetSocketTransportAddress("10.211.55.4", 9300));
         return client;
     }
-
 
     /**
      * on shutDownClient
@@ -66,12 +70,20 @@ public class Es_Demo {
 
     /**
      * 预定义一个索引的mapping,使用mapping的好处是可以个性的设置某个字段等的属性
+     * INDEX_DEMO_01类似于数据库
+     * mapping 类似于预设某个表的字段类型
+     * <p/>
+     * Mapping,就是对索引库中索引的字段名及其数据类型进行定义，类似于关系数据库中表建立时要定义字段名及其数据类型那样，
+     * 不过es的 mapping比数据库灵活很多，它可以动态添加字段。
+     * 一般不需要要指定mapping都可以，因为es会自动根据数据格式定义它的类型，
+     * 如果你需要对某 些字段添加特殊属性（如：定义使用其它分词器、是否分词、是否存储等），就必须手动添加mapping。
+     * 有两种添加mapping的方法，一种是定义在配 置文件中，一种是运行时手动提交mapping，两种选一种就行了。
      *
      * @throws Exception
      */
     public void buildIndexMapping() throws Exception {
         //在本例中主要得注意,ttl及timestamp如何用java ,这些字段的具体含义,请去到es官网查看
-        CreateIndexRequestBuilder cib = client.admin().indices().prepareCreate("productindex_liwei");
+        CreateIndexRequestBuilder cib = client.admin().indices().prepareCreate(INDEX_DEMO_01);
         XContentBuilder mapping = XContentFactory.jsonBuilder()
                 .startObject()
                 .startObject("we3r")//
@@ -91,153 +103,134 @@ public class Es_Demo {
                 .startObject("properties")
                 .startObject("name").field("type", "string").field("store", "yes").endObject()
                 .startObject("home").field("type", "string").field("index", "not_analyzed").endObject()
-                .startObject("hight").field("type", "double").endObject()
-                .startObject("iswoman").field("type", "boolean").endObject()
+                .startObject("height").field("type", "double").endObject()
                 .startObject("age").field("type", "integer").endObject()
-                .startObject("birthday").field("type", "date").field("format", "YYYYMMddhhMMSS").endObject()
+                .startObject("birthday").field("type", "date").field("format", "YYYY-MM-dd").endObject()
                 .endObject()
                 .endObject()
                 .endObject();
-        cib.addMapping("prindextype", mapping);
+        cib.addMapping(INDEX_DEMO_01_MAPPING, mapping);
         cib.execute().actionGet();
     }
 
     /**
-     * 该方法为增加索引记录
+     * 增加索引记录
      *
+     * @param user 添加的记录
      * @throws Exception
      */
-    public void buildIndex() throws Exception {
+    public void buildIndex(User user) throws Exception {
         // productindex_liwei为上个方法中定义的索引,prindextype为类型.jk8231为id,以此可以代替memchche来进行数据的缓存
-        IndexResponse response = client.prepareIndex("productindex_liwei", "prindextype", null)
-                .setSource(XContentFactory.jsonBuilder()
-                                .startObject()
-                                .field("name", "sanwa")//该字段在上面的方法中mapping定义了,所以该字段就有了自定义的属性,比如 age等
-                                .field("home", "USA")
-                                .field("hight", 232)
-                                .field("iswoman", true)
-                                .field("age", 2)
-                                .field("birthday", Joda_Time.getNowDate())
-                                .field("state", "默认属性,mapping中没有定义")//该字段在上面方法中的mapping中没有定义,所以该字段的属性使用es默认的.
-                                .endObject()
+        IndexResponse response = client.prepareIndex(INDEX_DEMO_01, INDEX_DEMO_01_MAPPING)
+                .setSource(
+                        User.getXContentBuilder(user)
                 )
                 .setTTL(8000)//这样就等于单独设定了该条记录的失效时间,单位是毫秒,必须在mapping中打开_ttl的设置开关
                 .execute()
                 .actionGet();
-
-        IndexResponse response2 = client.prepareIndex("productindex_liwei", "prindextype")
-                .setSource(XContentFactory.jsonBuilder()
-                                .startObject()
-                                .field("name", "xiaopang")
-                                .field("home", "中国")
-                                .field("hight", 232)
-                                .field("iswoman", true)
-                                .field("age", 22)
-                                .field("birthday", Joda_Time.getNowDate())
-                                .endObject()
-                )
-                .execute()
-                .actionGet();
-
     }
 
     /**
+     * 批量添加记录到索引
+     *
+     * @param userList 批量添加数据
      * @throws IOException
      */
-    public void bulkApi() throws IOException {
+    public void buildBulkIndex(List<User> userList) throws IOException {
         BulkRequestBuilder bulkRequest = client.prepareBulk();
-
         // either use client#prepare, or use Requests# to directly build index/delete requests
-        bulkRequest.add(client.prepareIndex("productindex_liwei", "prindextype")
-                        .setSource(XContentFactory.jsonBuilder()
-                                        .startObject()
-                                        .field("name", "liw")//该字段在上面的方法中mapping定义了,所以该字段就有了自定义的属性,比如 age等
-                                        .field("home", "中国")
-                                        .field("hight", 179.9)
-                                        .field("iswoman", false)
-                                        .field("age", 25)
-                                        .field("birthday", Joda_Time.getNowDate())
-                                        .field("state", "默认属性,mapping中没有定义")//该字段在上面方法中的mapping中没有定义,所以该字段的属性使用es默认的.
-                                        .endObject()
-                        )
-        );
 
-        bulkRequest.add(client.prepareIndex("productindex_liwei", "prindextype")
-                        .setSource(XContentFactory.jsonBuilder()
-                                        .startObject()
-                                        .field("name", "jiaojiao")//该字段在上面的方法中mapping定义了,所以该字段就有了自定义的属性,比如 age等
-                                        .field("home", "中国")
-                                        .field("hight", 169.9)
-                                        .field("iswoman", true)
-                                        .field("age", 26)
-                                        .field("birthday", Joda_Time.getNowDate())
-                                        .field("state", "默认属性,mapping中没有定义")//该字段在上面方法中的mapping中没有定义,所以该字段的属性使用es默认的.
-                                        .endObject()
-                        )
-        );
+        for (User user : userList) {
+            //通过add批量添加
+            bulkRequest.add(client.prepareIndex(INDEX_DEMO_01, INDEX_DEMO_01_MAPPING)
+                            .setSource(
+                                    User.getXContentBuilder(user)
+                            )
+            );
+        }
 
         BulkResponse bulkResponse = bulkRequest.execute().actionGet();
         //如果失败
         if (bulkResponse.hasFailures()) {
             // process failures by iterating through each bulk response item
+            System.out.println("buildFailureMessage:" + bulkResponse.buildFailureMessage());
         }
     }
 
     /**
-     * 搜索API
+     * 通过Id删除索引记录
+     *
+     * @param id
      */
-    public void searchApi() {
-        SearchResponse response = client.prepareSearch("productindex_liwei")
-                //.setTypes("type1", "type2")
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                //.setQuery(QueryBuilders.termQuery("multi", "test"))             // Query
-                .setPostFilter(FilterBuilders.rangeFilter("age").from(12).to(18))   // Filter
-                .setFrom(0).setSize(60).setExplain(true)
-                .execute()
-                .actionGet();
-        SearchHit[] searchHits = response.getHits().getHits();
-        for (SearchHit searchHit : searchHits) {
-            System.out.println("------------搜索出来的数据jsondata------------\n " + searchHit.getSourceAsString());
-        }
-    }
+    public void deleteIndexById(String id) {
 
-    /**
-     * 搜索的使用
-     */
-    public void exm() {
-
-        System.out.println("------------删除------------");
-        DeleteResponse responsedd = client.prepareDelete("productindex_liwei", "prindextype", "jk8234")
+        DeleteResponse responsedd = client.prepareDelete(INDEX_DEMO_01, INDEX_DEMO_01_MAPPING, id)
                 .setOperationThreaded(false)
                 .execute()
                 .actionGet();
+    }
 
-        System.out.println("------------根据主键搜索得到值------------");
-        GetResponse responsere = client.prepareGet("productindex_liwei", "prindextype", "jk8231")
+    /**
+     * 通过Query条件查询后删除索引记录
+     */
+    public void deleteIndexByQuery() {
+
+        QueryBuilder query = new QueryStringQueryBuilder("李伟").field("name");
+        client.prepareDeleteByQuery(INDEX_DEMO_01).setQuery(query).execute().actionGet();
+
+    }
+
+    /**
+     * 搜索，通过Id搜索API
+     *
+     * @param id
+     */
+    public void searchById(String id) {
+        GetResponse responsere = client.prepareGet(INDEX_DEMO_01, INDEX_DEMO_01_MAPPING, id)
+                /*
+                设置线程
+     当删除api在同一个节点上执行时（在一个分片中执行一个api会分配到同一个服务器上），
+     删除api允许执行前设置线程模式 （operationThreaded选项），operationThreaded这个选项是使这个操作在另外一个线程中执行，
+     或在一个正在请求的线程 （假设这个api仍是异步的）中执行。
+     默认的话operationThreaded会设置成true，这意味着这个操作将在一个不同的线程中执行。
+     下面是 设置成false的方法：
+                 */
+                .setOperationThreaded(false)
                 .execute()
                 .actionGet();
-        System.out.println("------------完成读取------------\n" + responsere.getSourceAsString());
+        System.out.println("通过Id搜索:" + responsere.getSourceAsString());
+    }
 
+    /**
+     * 搜索，Query搜索API
+     */
+    public void searchByQuery() {
 
-        System.out.println("------------搜索------------");
-        //搜索productindex_liwei,prepareSearch(String... indices)注意该方法的参数,可以搜索多个索引
-        SearchRequestBuilder builder = client.prepareSearch("productindex_liwei")
-                .setTypes("prindextype")
-                .setSearchType(SearchType.DEFAULT)
-                .setFrom(0)
-                .setSize(50);
-        QueryBuilder qb2 = QueryBuilders.boolQuery() // boolQuery() 就相当于 sql中的and
-                .must(new QueryStringQueryBuilder("中国人3").field("home"))//QueryStringQueryBuilder是单个字段的搜索条件,相当于组织sql的  where后面的   字段名=字段值
-                .should(new QueryStringQueryBuilder("3").field("dfsfs"))
-                .must(QueryBuilders.termQuery("dfsfs", "中"));//关于QueryStringQueryBuilder及termQuery等的使用可以使用es插件head来进行操作体会个中query的不同
-        builder.setQuery(qb2);
-        SearchResponse responsesearch = builder.execute().actionGet();
-        System.out.println("" + responsesearch);
-        try {
-            String jsondata = responsesearch.getHits().getHits()[0].getSourceAsString();
-            System.out.println("------------搜索出来的数据jsondata------------\n " + jsondata);
-        } catch (Exception es) {
+        QueryBuilder queryBuilder = new QueryStringQueryBuilder("李伟").field("name");
 
+        //qb1构造了一个TermQuery，对name这个字段进行项搜索，项是最小的索引片段，这个查询对应lucene本身的TermQuery
+        QueryBuilder queryBuilder1 = QueryBuilders.termQuery("name", "李伟");
+
+        //qb2构造了一个组合查询（BoolQuery），其对应lucene本身的BooleanQuery，可以通过must、should、mustNot方法对QueryBuilder进行组合，形成多条件查询
+        QueryBuilder queryBuilder2 = QueryBuilders.boolQuery()
+                .must(QueryBuilders.termQuery("note", "test1"))
+                .must(QueryBuilders.termQuery("note", "test4"))
+                .mustNot(QueryBuilders.termQuery("note", "test2"))
+                .should(QueryBuilders.termQuery("note", "test3"));
+
+        SearchResponse response = client.prepareSearch(INDEX_DEMO_01)
+                .setTypes(INDEX_DEMO_01_MAPPING)
+                        // .setSearchType(SearchType.SCAN)
+                .setQuery(queryBuilder1)
+                        //.setQuery(QueryBuilders.termQuery("multi", "test"))       // Query
+                .setPostFilter(FilterBuilders.rangeFilter("age").from(12).to(26))   // Filter
+                .setFrom(0).setSize(60).setExplain(true)
+                .execute()
+                .actionGet();
+        //获取结果集
+        SearchHit[] searchHits = response.getHits().getHits();
+        for (SearchHit searchHit : searchHits) {
+            System.out.println(searchHit.getSourceAsString());
         }
     }
 
@@ -246,13 +239,11 @@ public class Es_Demo {
         esm.setClient(esm.buildClient());
         try {
             //esm.buildIndexMapping();
-            //
-            //esm.buildIndex();
-            //esm.bulkApi();
+            //esm.buildIndex(User.getOneRandomUser());
+            esm.buildBulkIndex(User.getRandomUsers(1000));
             //esm.exm();
-            esm.searchApi();
+            //esm.searchByQuery();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             esm.shutDownClient();

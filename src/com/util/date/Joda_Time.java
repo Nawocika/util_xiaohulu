@@ -81,6 +81,17 @@ public class Joda_Time {
         return new DateTime().toString(parameter);
     }
 
+    /**
+     * 字符串转Date日期
+     *
+     * @param dataStr 默认格式为 yyyy-mm-dd
+     * @return Date
+     */
+    public static Date str2Date(String dataStr) {
+
+        DateTime dateTime = new DateTime(dataStr);
+        return dateTime.toDate();
+    }
 
     /**
      * 计算五年后的第二个月的最后一天-demo
@@ -93,6 +104,7 @@ public class Joda_Time {
         dateTime = dateTime.plusYears(5).monthOfYear().setCopy(2).dayOfMonth().withMaximumValue();
         return getDateTime(dateTime);
     }
+
 
     /**
      * other demo
@@ -115,4 +127,7 @@ public class Joda_Time {
         return getDateTime(dateTime);
     }
 
+    public static void main(String[] args) {
+        System.out.printf(str2Date("2013-04-04").toString());
+    }
 }
