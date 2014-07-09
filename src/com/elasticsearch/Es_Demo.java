@@ -1,12 +1,20 @@
 package com.elasticsearch;
 
+import com.thread.my_thread.Task;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.count.CountRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.MultiSearchRequest;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -19,6 +27,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -57,7 +66,8 @@ public class Es_Demo {
                 .put("client.transport.sniff", true).put("cluster.name", "liw_test").build();
         Client client = new TransportClient(settings)
                 .addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
-        // .addTransportAddress(new InetSocketTransportAddress("10.211.55.4", 9300));
+        //.addTransportAddress(new InetSocketTransportAddress("10.211.55.4", 9300));
+        client.admin().indices().exists(new IndicesExistsRequest(INDEX_DEMO_01)).actionGet().isExists();
         return client;
     }
 
@@ -198,18 +208,22 @@ public class Es_Demo {
                 .setOperationThreaded(false)
                 .execute()
                 .actionGet();
-        System.out.println("通过Id搜索:" + responsere.getSourceAsString());
+        if (responsere.isExists()) {
+            System.out.println("通过Id=[" + id + "]搜索结果:\n" + responsere.getSourceAsString());
+        } else {
+            System.out.println("通过Id=[" + id + "]搜索结果:不存在");
+        }
+
     }
 
     /**
      * 搜索，Query搜索API
+     * 条件组合查询
      */
     public void searchByQuery() {
 
-        QueryBuilder queryBuilder = new QueryStringQueryBuilder("李伟").field("name");
-
         //qb1构造了一个TermQuery，对name这个字段进行项搜索，项是最小的索引片段，这个查询对应lucene本身的TermQuery
-        QueryBuilder queryBuilder1 = QueryBuilders.termQuery("name", "李伟");
+        QueryBuilder queryBuilder1 = QueryBuilders.termQuery("name", "葫芦2娃");
 
         //qb2构造了一个组合查询（BoolQuery），其对应lucene本身的BooleanQuery，可以通过must、should、mustNot方法对QueryBuilder进行组合，形成多条件查询
         QueryBuilder queryBuilder2 = QueryBuilders.boolQuery()
@@ -218,31 +232,106 @@ public class Es_Demo {
                 .mustNot(QueryBuilders.termQuery("note", "test2"))
                 .should(QueryBuilders.termQuery("note", "test3"));
 
-        SearchResponse response = client.prepareSearch(INDEX_DEMO_01)
+        //直接执行搜索
+        SearchHit[] searchHitsBySearch = client.search(new SearchRequest(INDEX_DEMO_01)
+                        .types(INDEX_DEMO_01_MAPPING)
+                        .source(
+                                SearchSourceBuilder.searchSource()
+                                        .sort("age")
+                        )
+        )
+                .actionGet()
+                .getHits()
+                .hits();
+
+
+        //预准备执行搜索
+
+        client.prepareSearch(INDEX_DEMO_01)
                 .setTypes(INDEX_DEMO_01_MAPPING)
                         // .setSearchType(SearchType.SCAN)
-                .setQuery(queryBuilder1)
+                //.setQuery(queryBuilder1)
                         //.setQuery(QueryBuilders.termQuery("multi", "test"))       // Query
-                .setPostFilter(FilterBuilders.rangeFilter("age").from(12).to(26))   // Filter
+                //.setPostFilter(FilterBuilders.rangeFilter("age").lt(10).gt(50))   // Filter过滤
+                //.setPostFilter(FilterBuilders.inFilter("age", 45))   // Filter过滤
+                .setPostFilter(FilterBuilders.boolFilter().mustNot(FilterBuilders.inFilter("age", 20, 21, 22)))
                 .setFrom(0).setSize(60).setExplain(true)
                 .execute()
-                .actionGet();
-        //获取结果集
-        SearchHit[] searchHits = response.getHits().getHits();
-        for (SearchHit searchHit : searchHits) {
-            System.out.println(searchHit.getSourceAsString());
-        }
+                        //注册监听事件
+                .addListener(new ActionListener<SearchResponse>() {
+                    @Override
+                    public void onResponse(SearchResponse searchResponse) {
+                        SearchHit[] searchHitsByPrepareSearch = searchResponse.getHits().hits();
+                        //获取结果集
+                        for (SearchHit searchHit : searchHitsByPrepareSearch) {
+                            System.out.println(searchHit.getSourceAsString());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable e) {
+
+                    }
+                });
     }
+
+    /**
+     * 搜索，Query搜索API
+     * count查询
+     */
+    public void searchByQuery_Count() {
+
+        long countByCount = client.count(
+                new CountRequest(INDEX_DEMO_01).types(INDEX_DEMO_01_MAPPING)
+        )
+                .actionGet()
+                .getCount();
+
+        //预准备
+        long countByPrepareCount = client.prepareCount(INDEX_DEMO_01)
+                .setTypes(INDEX_DEMO_01_MAPPING)
+                .setQuery(QueryBuilders.termQuery("name", "葫芦1娃"))
+                .execute()
+                .actionGet()
+                .getCount();
+        System.out.println("searchByQuery_Count<{}>:" + countByCount);
+    }
+
+    /**
+     * 修改
+     */
+    public void updateByQuery() throws IOException {
+
+        boolean isCreatedByUpdate = client.update(new UpdateRequest(INDEX_DEMO_01, INDEX_DEMO_01_MAPPING, "TKLkVot6SJu429zpJbFN3g")
+                        .doc(XContentFactory.jsonBuilder()
+                                        .startObject()
+                                        .field("name", "liw")
+                                        .field("age", "25")
+                                        .endObject()
+                        )
+        )
+                .actionGet()
+                .isCreated();
+        //预准备
+        client.prepareUpdate(INDEX_DEMO_01, INDEX_DEMO_01_MAPPING, "TKLkVot6SJu429zpJbFN3g")
+                .setDoc("age", "18")
+                .execute()
+                .actionGet();
+    }
+
 
     public static void main(String[] dfd) {
         Es_Demo esm = new Es_Demo();
         esm.setClient(esm.buildClient());
+
         try {
             //esm.buildIndexMapping();
             //esm.buildIndex(User.getOneRandomUser());
-            esm.buildBulkIndex(User.getRandomUsers(1000));
-            //esm.exm();
-            //esm.searchByQuery();
+            //esm.buildBulkIndex(User.getRandomUsers(10000));
+            //esm.searchById("5_XDJBA-TBOra4a7oyiYrA");
+            esm.searchByQuery();
+            //esm.searchByQuery_Count();
+            //esm.updateByQuery();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
