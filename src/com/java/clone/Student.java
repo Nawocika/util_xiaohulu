@@ -4,6 +4,8 @@ import java.util.Vector;
 
 /**
  * Created by lw on 14-5-5.
+ * 浅拷贝
+ * 深拷贝
  */
 public class Student implements Cloneable {
 

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 
 /**
  * Created by lw on 14-5-5.
+ * C3P0_Pool 数据库连接池
  */
 public class C3P0_Pool {
 

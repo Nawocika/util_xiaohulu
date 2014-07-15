@@ -135,6 +135,9 @@ public class User {
     }
 }
 
+/**
+ * 地理位置信息
+ */
 class Location {
     private double lat;
     private double lon;
@@ -167,9 +170,4 @@ class Location {
                 ", lon=" + lon +
                 '}';
     }
-
-   /* @Override
-    public String toString() {
-        return "[" + lat + "," + lon + "]";
-    }*/
 }

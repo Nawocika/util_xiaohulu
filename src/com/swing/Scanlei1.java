@@ -18,6 +18,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+/*
+  É¨À×
+ */
 public class Scanlei1 extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = 1L;
