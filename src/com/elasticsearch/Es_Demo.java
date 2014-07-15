@@ -1,6 +1,5 @@
 package com.elasticsearch;
 
-import com.thread.my_thread.Task;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -10,11 +9,9 @@ import org.elasticsearch.action.count.CountRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.MultiSearchRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -23,12 +20,9 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.index.fielddata.IndexGeoPointFieldData;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.facet.Facet;
-import org.elasticsearch.search.facet.FacetBuilder;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.Facets;
 import org.elasticsearch.search.facet.filter.FilterFacet;
@@ -73,6 +67,7 @@ public class Es_Demo {
 
     /**
      * startup Transport Client
+     * 启动es
      *
      * @return
      */
@@ -92,10 +87,16 @@ public class Es_Demo {
 
     /**
      * on shutDownClient
+     * 停止es
      */
     public void shutDownClient() {
         client.close();
     }
+    /**
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  索引的mapping
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
 
     /**
      * 预定义一个索引的mapping,使用mapping的好处是可以个性的设置某个字段等的属性
@@ -143,6 +144,13 @@ public class Es_Demo {
         cib.execute().actionGet();
     }
 
+
+    /**
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  添加记录到es
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
+
     /**
      * 增加索引记录
      *
@@ -188,6 +196,12 @@ public class Es_Demo {
     }
 
     /**
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  删除索引记录
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
+
+    /**
      * 通过Id删除索引记录
      *
      * @param id
@@ -209,6 +223,12 @@ public class Es_Demo {
         client.prepareDeleteByQuery(INDEX_DEMO_01).setQuery(query).execute().actionGet();
 
     }
+
+    /**
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  搜索
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
 
     /**
      * 搜索，通过Id搜索API
@@ -316,6 +336,13 @@ public class Es_Demo {
                 .getCount();
         System.out.println("searchByQuery_Count<{}>:" + countByCount);
     }
+
+
+    /**
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  搜索 Facets分组统计
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
 
     /**
      * 搜索，Query搜索API
@@ -469,6 +496,13 @@ public class Es_Demo {
         }
 
     }
+
+
+    /**
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  修改
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
 
 
     /**
