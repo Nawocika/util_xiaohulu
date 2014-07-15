@@ -21,7 +21,7 @@ public class User {
     private double height;//身高
     private int age;
     private Date birthday;
-    private Location location;
+    private Location location;//地理位置
 
     public User() {
     }
