@@ -18,20 +18,24 @@ public class User {
 
     private String name;
     private String home;//家乡
+    private String now_home;//现住址
     private double height;//身高
     private int age;
     private Date birthday;
+    private boolean isRealMen = false; //是否是男人
     private Location location;//地理位置
 
     public User() {
     }
 
-    public User(String name, String home, double height, int age, Date birthday, Location location) {
+    public User(String name, String home, String now_home, double height, int age, Date birthday, boolean isRealMen, Location location) {
         this.name = name;
         this.home = home;
+        this.now_home = now_home;
         this.height = height;
         this.age = age;
         this.birthday = birthday;
+        this.isRealMen = isRealMen;
         this.location = location;
     }
 
@@ -43,8 +47,10 @@ public class User {
     public static User getOneRandomUser() {
         Random random = new Random();
         Location location = new Location(random.nextDouble(), random.nextDouble());
-        return new User("葫芦" + random.nextInt(10000) + "娃", "山西省太原市" + random.nextInt(10000) + "街道", random.nextInt(10000),
-                random.nextInt(10000), new Date(System.currentTimeMillis() - (long) (Math.random() * 100000)), location);
+        String home = "山西省太原市" + random.nextInt(10000) + "街道";
+        String now_home = random.nextBoolean() ? "北京市" + random.nextInt(10000) + "街道" : home;
+        return new User("葫芦" + random.nextInt(10000) + "娃", home, now_home, random.nextInt(10000),
+                random.nextInt(10000), new Date(System.currentTimeMillis() - (long) (Math.random() * 100000)), random.nextBoolean(), location);
     }
 
     /**
@@ -59,8 +65,10 @@ public class User {
         for (int i = 0; i < num; i++) {
             Random random = new Random();
             Location location = new Location(random.nextDouble(), random.nextDouble());
-            users.add(new User("葫芦" + random.nextInt(10000) + "娃", "山西省太原市" + random.nextInt(10000) + "街道", random.nextInt(10000),
-                    random.nextInt(10000), new Date(System.currentTimeMillis() - (long) (Math.random() * 100000)), location));
+            String home = "山西省太原市" + random.nextInt(10000) + "街道";
+            String now_home = random.nextBoolean() ? "北京市" + random.nextInt(10000) + "街道" : home;
+            users.add(new User("葫芦" + random.nextInt(10000) + "娃", home, now_home, random.nextInt(10000),
+                    random.nextInt(10000), new Date(System.currentTimeMillis() - (long) (Math.random() * 100000)), random.nextBoolean(), location));
         }
 
         return users;
@@ -78,9 +86,11 @@ public class User {
                 .startObject()
                 .field("name", user.getName())//该字段在上面的方法中mapping定义了,所以该字段就有了自定义的属性,比如 age等
                 .field("home", user.getHome())
+                .field("now_home", user.getNow_home())
                 .field("height", user.getHeight())
                 .field("age", user.getAge())
                 .field("birthday", user.getBirthday())
+                .field("isRealMen", user.isRealMen())
                 .startObject("location").field("lat", user.getLocation().getLat()).field("lon", user.getLocation().getLon()).endObject()
                 .field("state", "默认属性,mapping中没有定义")//该字段在上面方法中的mapping中没有定义,所以该字段的属性使用es默认的.
                 .endObject();
@@ -100,6 +110,14 @@ public class User {
 
     public void setHome(String home) {
         this.home = home;
+    }
+
+    public String getNow_home() {
+        return now_home;
+    }
+
+    public void setNow_home(String now_home) {
+        this.now_home = now_home;
     }
 
     public double getHeight() {
@@ -124,6 +142,14 @@ public class User {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public boolean isRealMen() {
+        return isRealMen;
+    }
+
+    public void setRealMen(boolean isRealMen) {
+        this.isRealMen = isRealMen;
     }
 
     public Location getLocation() {
