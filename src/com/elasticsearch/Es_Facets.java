@@ -4,7 +4,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.Facets;
 import org.elasticsearch.search.facet.filter.FilterFacet;
@@ -44,22 +43,28 @@ public class Es_Facets {
                 .field("name")
                 .size(Integer.MAX_VALUE);//取得 name分组后COUNT值，显示size值
 
+
         RangeFacetBuilder rangeFacetBuilder = FacetBuilders.rangeFacet("RangeFacetBuilder")
                 .field("age")
                 .addRange(20, 30);//取得age-》20到30值的结果
+
 
         HistogramFacetBuilder histogramFacetBuilder = FacetBuilders.histogramFacet("HistogramFacetBuilder")
                 .field("birthday") //生日分组统计
                 .interval(1, TimeUnit.MINUTES); //按分钟数分组
 
+
         FilterFacetBuilder filterFacetBuilder = FacetBuilders.filterFacet("FilterFacetBuilder",
                 FilterBuilders.termFilter("name", "葫芦747娃"));    // Your Filter here
+
 
         QueryFacetBuilder queryFacetBuilder = FacetBuilders.queryFacet("QueryFacetBuilder",
                 QueryBuilders.matchQuery("age", 29));
 
+
         StatisticalFacetBuilder statisticalFacetBuilder = FacetBuilders.statisticalFacet("StatisticalFacetBuilder")
                 .field("height");
+
 
         GeoDistanceFacetBuilder geoDistanceFacetBuilder = FacetBuilders.geoDistanceFacet("GeoDistanceFacetBuilder")
                 .field("location")                   // Field containing coordinates we want to compare with
