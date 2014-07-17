@@ -10,39 +10,31 @@ import java.util.regex.Pattern;
  * 当将“组”的概念与“子表达式”对应起来之后，理解matcher的group,start,end就完全没有障碍了。
  */
 public class GroupIndexAndStartEndIndexTest {
+    public static final String PATTERN_TEMPLATE = "%\\{([a-zA-Z0-9_]*)\\}";
+    public static final Pattern pattern = Pattern.compile(PATTERN_TEMPLATE);
+
+    //#customizable alarm variables: date, time, id, type, metric_name, real_value, start_time, end_time, stream_id, stream_name, topo_id, topo_name, severity, reverse_severity
+    public static final String out_syslog_alarm_template = "02|1|%{date}|%{time}|192.168.1.233|ezsonar_host|EZSonar_BIZ|EZSonar_App|EZSonar_Instance_Name|EZSonar_Instance_value|%{id}|%{type}|%{metric_name}|%{real_value}|%{start_time}|%{end_time}|%{stream_id}|%{topo_id}|%{topo_name}|%{topo_node_id}|%{topo_node_name}|%{root_node_name}|300|%{severity}";
+    // #customizable performance variables: topo_id, topo_name, node_id, node_name, count, success_rate, response_rate, _latency_msec, _in_bytes, _out_bytes, _in_pkts, _out_pkts, _in_retran, _out_retran, _tot_rst, _tot_rst_s, _in_ooo, _out_ooo, _tot_zero_client, _tot_zero_server,
+    public static final String out_syslog_topo_performance_template = "02|0|%{date}|%{time}|192.168.1.233|ezsonar_host|EZSonar_BIZ|EZSonar_App|EZSonar_Instance_Name|EZSonar_Instance_value|%{topo_id}|%{topo_name}|%{count}|%{success_rate}|%{response_rate}|%{latency_msec}|%{in_bytes}|%{out_bytes}|%{in_pkts}|";
+    public static final String out_syslog_node_performance_template = "02|0|%{date}|%{time}|192.168.1.233|ezsonar_host|EZSonar_BIZ|EZSonar_App|EZSonar_Instance_Name|EZSonar_Instance_value|%{topo_id}|%{topo_name}|%{topo_node_id}|%{topo_node_name}|%{count}|%{success_rate}|%{response_rate}|%{latency_msec}|%{in_bytes}|%{out_bytes}|%{in_pkts}|";
+    public static final String out_syslog_stream_performance_template = "02|0|%{date}|%{time}|192.168.1.233|ezsonar_host|EZSonar_BIZ|EZSonar_App|EZSonar_Instance_Name|EZSonar_Instance_value|%{topo_id}|%{topo_name}|%{count}|%{success_rate}|%{response_rate}|%{latency_msec}|%{in_bytes}|%{out_bytes}|%{in_pkts}|";
 
     public static void main(String[] args) {
-
-        //matcher();
-        appendReplacement();
+        matcher();
     }
 
     private static void matcher() {
-        String str = "Hello,World! in Java.Hello,World! in Java.";
-        String str_1 = "in Java.";
-        Pattern pattern = Pattern.compile("W(or)(ld!)");
-        Matcher matcher = pattern.matcher(str);
-        // matcher.reset(str_1);
+        String str = "02|0|%{date}|%{time}|192.168.1.233|%{ezsonar_host}|EZSonar_BIZ|EZSonar_App|EZSonar_Instance_Name|EZSonar_Instance_value|%{topo_id}|%{topo_name}|%{count}|%{success_rate}|%{response_rate}|%{latency_msec}|%{in_bytes}|%{out_bytes}|%{in_pkts}|";
+        Matcher matcher = pattern.matcher(str.trim());
+        matcher.reset();
+        System.out.println("matcher.groupCount()->\t" + matcher.groupCount());
         while (matcher.find()) {
-            System.out.println("Group 0:" + matcher.group(0));//得到第0组——整个匹配
-            System.out.println("Group 1:" + matcher.group(1));//得到第一组匹配——与(or)匹配的
-            System.out.println("Group 2:" + matcher.group(2));//得到第二组匹配——与(ld!)匹配的，组也就是子表达式
-            System.out.println("Start 0:" + matcher.start(0) + " End 0:" + matcher.end(0));//总匹配的索引
-            System.out.println("Start 1:" + matcher.start(1) + " End 1:" + matcher.end(1));//第一组匹配的索引
-            System.out.println("Start 2:" + matcher.start(2) + " End 2:" + matcher.end(2));//第二组匹配的索引
-            System.out.println(str.substring(matcher.start(0), matcher.end(1)));//从总匹配开始索引到第1组匹配的结束索引之间子串——Wor
+            System.out.println("Group 1:\t" + matcher.group(1));//得到第一组匹配——与(or)匹配的
+            //System.out.println("Start 1:\t" + matcher.start(1) + " End 1:\t" + matcher.end(1));//第一组匹配的索引
+            //System.out.println(str.substring(matcher.start(0), matcher.end(1)));//从总匹配开始索引到第1组匹配的结束索引之间子串——Wor
         }
     }
 
-    private static void appendReplacement() {
-        Pattern p = Pattern.compile("cat");
-        Matcher m = p.matcher("one cat two cats in the yard");
-        StringBuffer sb = new StringBuffer();
-        while (m.find()) {
-            m.appendReplacement(sb, "dog");
-        }
-        m.appendTail(sb);
-        System.out.println(sb.toString());
 
-    }
 }
