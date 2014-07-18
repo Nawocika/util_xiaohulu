@@ -15,6 +15,7 @@ public class GroupIndexAndStartEndIndexTest {
 
     //#customizable alarm variables: date, time, id, type, metric_name, real_value, start_time, end_time, stream_id, stream_name, topo_id, topo_name, severity, reverse_severity
     public static final String out_syslog_alarm_template = "02|1|%{date}|%{time}|192.168.1.233|ezsonar_host|EZSonar_BIZ|EZSonar_App|EZSonar_Instance_Name|EZSonar_Instance_value|%{id}|%{type}|%{metric_name}|%{real_value}|%{start_time}|%{end_time}|%{stream_id}|%{topo_id}|%{topo_name}|%{topo_node_id}|%{topo_node_name}|%{root_node_name}|300|%{severity}";
+
     // #customizable performance variables: topo_id, topo_name, node_id, node_name, count, success_rate, response_rate, _latency_msec, _in_bytes, _out_bytes, _in_pkts, _out_pkts, _in_retran, _out_retran, _tot_rst, _tot_rst_s, _in_ooo, _out_ooo, _tot_zero_client, _tot_zero_server,
     public static final String out_syslog_topo_performance_template = "02|0|%{date}|%{time}|192.168.1.233|ezsonar_host|EZSonar_BIZ|EZSonar_App|EZSonar_Instance_Name|EZSonar_Instance_value|%{topo_id}|%{topo_name}|%{count}|%{success_rate}|%{response_rate}|%{latency_msec}|%{in_bytes}|%{out_bytes}|%{in_pkts}|";
     public static final String out_syslog_node_performance_template = "02|0|%{date}|%{time}|192.168.1.233|ezsonar_host|EZSonar_BIZ|EZSonar_App|EZSonar_Instance_Name|EZSonar_Instance_value|%{topo_id}|%{topo_name}|%{topo_node_id}|%{topo_node_name}|%{count}|%{success_rate}|%{response_rate}|%{latency_msec}|%{in_bytes}|%{out_bytes}|%{in_pkts}|";
@@ -35,6 +36,4 @@ public class GroupIndexAndStartEndIndexTest {
             //System.out.println(str.substring(matcher.start(0), matcher.end(1)));//从总匹配开始索引到第1组匹配的结束索引之间子串——Wor
         }
     }
-
-
 }
