@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
  * Created by lw on 14-7-15.
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * 搜索 Facets分组统计
+ * http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/java-facets.html
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 public class Es_Facets {

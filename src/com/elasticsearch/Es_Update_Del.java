@@ -1,6 +1,8 @@
 package com.elasticsearch;
 
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -34,8 +36,22 @@ public class Es_Update_Del {
      */
     protected static void deleteIndexByQuery() {
 
-        QueryBuilder query = new QueryStringQueryBuilder("李伟").field("name");
-        Es_Utils.client.prepareDeleteByQuery(Es_Utils.INDEX_DEMO_01).setQuery(query).execute().actionGet();
+        QueryBuilder query = new QueryStringQueryBuilder("葫芦3582娃").field("name");
+        Es_Utils.client.prepareDeleteByQuery(Es_Utils.INDEX_DEMO_01)
+                .setTypes(Es_Utils.INDEX_DEMO_01_MAPPING)
+                .setQuery(query)
+                .execute()
+
+                .addListener(new ActionListener<DeleteByQueryResponse>() {
+                    @Override
+                    public void onResponse(DeleteByQueryResponse indexDeleteByQueryResponses) {
+                    }
+
+                    @Override
+                    public void onFailure(Throwable e) {
+
+                    }
+                });
 
     }
 
