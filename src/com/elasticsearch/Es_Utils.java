@@ -1,13 +1,21 @@
 package com.elasticsearch;
 
+import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.stats.IndexStats;
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.search.SearchHit;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by lw on 14-7-15.
@@ -19,6 +27,9 @@ public class Es_Utils {
 
 
     protected static Client client;
+
+    //直接传入 index_demo_*  即按前缀* 查询
+    protected static final String INDEX_DEMO_ALL = "index_demo_*";
 
     protected static final String INDEX_DEMO_01 = "index_demo_01";
     protected static final String INDEX_DEMO_01_MAPPING = "index_demo_01_mapping";
@@ -38,9 +49,9 @@ public class Es_Utils {
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put("client.transport.sniff", true).put("cluster.name", "liw_test").build();
         client = new TransportClient(settings)
-                .addTransportAddress(new InetSocketTransportAddress("localhost", 9300));
+                .addTransportAddress(new InetSocketTransportAddress("192.168.1.103", 9300));
         //.addTransportAddress(new InetSocketTransportAddress("10.211.55.4", 9300));
-        client.admin().indices().exists(new IndicesExistsRequest(INDEX_DEMO_01)).actionGet().isExists();
+        System.out.println(INDEX_DEMO_01 + "是否存在？-》" + client.admin().indices().exists(new IndicesExistsRequest(INDEX_DEMO_01)).actionGet().isExists());
     }
 
     /**
@@ -51,6 +62,19 @@ public class Es_Utils {
         client.close();
     }
 
+
+    /**
+     * 获取所有index
+     *
+     * @return
+     */
+    protected static void getAllIndices() {
+        ActionFuture<IndicesStatsResponse> isr = client.admin().indices().stats(new IndicesStatsRequest().all());
+        IndicesAdminClient  indicesAdminClient =client.admin().indices();
+        Map<String, IndexStats> indexStatsMap = isr.actionGet().getIndices();
+        Set<String> set = isr.actionGet().getIndices().keySet();
+        set.forEach(System.out::println);
+    }
 
     /**
      * 打印SearchResponse结果集

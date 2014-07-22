@@ -50,7 +50,7 @@ public class Es_Search {
      * 搜索，Query搜索API
      * 条件组合查询
      */
-    protected void searchByQuery() {
+    protected static void searchByQuery() {
 
         //qb1构造了一个TermQuery，对name这个字段进行项搜索，项是最小的索引片段，这个查询对应lucene本身的TermQuery
         QueryBuilder queryBuilder1 = QueryBuilders.termQuery("name", "葫芦2娃");
@@ -104,7 +104,7 @@ public class Es_Search {
      * 搜索，Query搜索API
      * count查询
      */
-    protected void searchByQuery_Count() {
+    protected static void searchByQuery_Count() {
 
         long countByCount = Es_Utils.client.count(
                 new CountRequest(Es_Utils.INDEX_DEMO_01).types(Es_Utils.INDEX_DEMO_01_MAPPING)
