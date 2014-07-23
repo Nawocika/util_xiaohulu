@@ -96,7 +96,7 @@ public class Es_BuildIndex {
      * 批量添加记录到索引
      *
      * @param userList 批量添加数据
-     * @throws IOException
+     * @throws java.io.IOException
      */
     protected static void buildBulkIndex(List<User> userList) throws IOException {
         BulkRequestBuilder bulkRequest = Es_Utils.client.prepareBulk();

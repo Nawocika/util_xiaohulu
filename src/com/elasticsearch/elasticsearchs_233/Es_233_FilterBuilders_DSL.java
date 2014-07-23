@@ -1,12 +1,10 @@
-package com.elasticsearch;
+package com.elasticsearch.elasticsearchs_233;
 
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.geo.GeoDistance;
 import org.elasticsearch.common.unit.DistanceUnit;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 
 /**
  * Created by lw on 14-7-16.
@@ -17,7 +15,7 @@ import org.elasticsearch.index.query.QueryBuilders;
  * <a>http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/query-dsl-filters.html</a>
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
-public class Es_FilterBuilders_DSL {
+public class Es_233_FilterBuilders_DSL {
 
 
     /**
@@ -63,7 +61,7 @@ public class Es_FilterBuilders_DSL {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
     protected static FilterBuilder idsFilter() {
-        return FilterBuilders.idsFilter(Es_Utils.INDEX_DEMO_01_MAPPING, "type2")
+        return FilterBuilders.idsFilter(Es_233_Utils.INDEX_DEMO_01_MAPPING, "type2")
                 .addIds("SNt0KdNbRdKmXJVaXfNxEA", "UDKtO4o9TgmDHIT4bk_OWw", "jkAZoHe9RWyjxyOnBCTdrw");
 
         // Type is optional
@@ -87,7 +85,7 @@ public class Es_FilterBuilders_DSL {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
     protected static FilterBuilder typeFilter() {
-        return FilterBuilders.typeFilter(Es_Utils.INDEX_DEMO_01_MAPPING);
+        return FilterBuilders.typeFilter(Es_233_Utils.INDEX_DEMO_01_MAPPING);
     }
 
     /**
@@ -335,21 +333,21 @@ public class Es_FilterBuilders_DSL {
 
 
     public static void main(String[] args) {
-        Es_Utils.startupClient();
+        Es_233_Utils.startupClient();
         try {
             searchTest(cache());
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            Es_Utils.shutDownClient();
+            Es_233_Utils.shutDownClient();
         }
     }
 
     private static void searchTest(FilterBuilder filterBuilder) {
         //预准备执行搜索
-        Es_Utils.client.prepareSearch(Es_Utils.INDEX_DEMO_01)
-                .setTypes(Es_Utils.INDEX_DEMO_01_MAPPING)
+        Es_233_Utils.client.prepareSearch(Es_233_Utils.INDEX_DEMO_01)
+                .setTypes(Es_233_Utils.INDEX_DEMO_01_MAPPING)
                 .setPostFilter(filterBuilder)
                 .setFrom(0).setSize(20).setExplain(true)
                 .execute()
@@ -357,7 +355,7 @@ public class Es_FilterBuilders_DSL {
                 .addListener(new ActionListener<SearchResponse>() {
                     @Override
                     public void onResponse(SearchResponse searchResponse) {
-                        Es_Utils.writeSearchResponse(searchResponse);
+                        Es_233_Utils.writeSearchResponse(searchResponse);
                     }
 
                     @Override

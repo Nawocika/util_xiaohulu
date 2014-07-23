@@ -1,8 +1,5 @@
 package com.elasticsearch;
 
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Created by lw on 14-7-15.
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
